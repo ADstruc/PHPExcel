@@ -2379,9 +2379,12 @@ class PHPExcel_Worksheet implements PHPExcel_IComparable
 	 * @param	boolean	$formatData				Should formatting be applied to cell values?
 	 * @param	boolean	$returnCellRef			False - Return a simple array of rows and columns indexed by number counting from zero
 	 *											True - Return rows and columns indexed by their actual row and column IDs
+	 * @param	string	$dateFormat				Custom PHP date format
+	 * @param   boolean $formatDateOnly			Apply formatting to date values only
+	 * 
 	 * @return array
 	 */
-	public function rangeToArray($pRange = 'A1', $nullValue = null, $calculateFormulas = true, $formatData = true, $returnCellRef = false, $formatDateOnly = false) {
+	public function rangeToArray($pRange = 'A1', $nullValue = null, $calculateFormulas = true, $formatData = true, $returnCellRef = false, $dateFormat = null, $formatDateOnly = false) {
 		// Returnvalue
 		$returnValue = array();
 
@@ -2420,7 +2423,7 @@ class PHPExcel_Worksheet implements PHPExcel_IComparable
 
 						if ($formatData || $formatDateOnly) {
 							$style = $this->_parent->getCellXfByIndex($cell->getXfIndex());
-							$returnValue[$rRef][$cRef] = PHPExcel_Style_NumberFormat::toFormattedString($returnValue[$rRef][$cRef], $style->getNumberFormat()->getFormatCode(), null, $formatDateOnly);
+							$returnValue[$rRef][$cRef] = PHPExcel_Style_NumberFormat::toFormattedString($returnValue[$rRef][$cRef], $style->getNumberFormat()->getFormatCode(), null, $dateFormat, $formatDateOnly);
 						}
 					} else {
 						// Cell holds a NULL

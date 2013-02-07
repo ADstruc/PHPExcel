@@ -520,12 +520,15 @@ class PHPExcel_Style_NumberFormat implements PHPExcel_IComparable
 	/**
 	 * Convert a value in a pre-defined format to a PHP string
 	 *
-	 * @param mixed	$value		Value to format
-	 * @param string	$format		Format code
-	 * @param array		$callBack	Callback function for additional formatting of string
+	 * @param mixed		$value				Value to format
+	 * @param string	$format				Format code
+	 * @param array		$callBack			Callback function for additional formatting of string
+	 * @param string	$dateFormat			Custom date format
+	 * @param boolean	$formatDateOnly		Format date values only (overrides $format)
+	 * 
 	 * @return string	Formatted string
 	 */
-	public static function toFormattedString($value = '', $format = '', $callBack = null, $formatDateOnly = false)
+	public static function toFormattedString($value = '', $format = '', $callBack = null, $dateFormat = null, $formatDateOnly = false)
 	{
 		// For now we do not treat strings although section 4 of a format code affects strings
 		if (!is_numeric($value)) return $value;
@@ -605,7 +608,12 @@ class PHPExcel_Style_NumberFormat implements PHPExcel_IComparable
 			}
 
 			$dateObj = PHPExcel_Shared_Date::ExcelToPHPObject($value);
-			$value = $dateObj->format($format);
+			if($dateFormat) {
+				$value = $dateObj->format($dateFormat);
+			} else {
+				$value = $dateObj->format($format);
+			}
+
 			$dateFormatted = true;
 		} 
 		
