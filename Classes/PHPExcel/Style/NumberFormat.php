@@ -525,7 +525,7 @@ class PHPExcel_Style_NumberFormat implements PHPExcel_IComparable
 	 * @param array		$callBack	Callback function for additional formatting of string
 	 * @return string	Formatted string
 	 */
-	public static function toFormattedString($value = '', $format = '', $callBack = null)
+	public static function toFormattedString($value = '', $format = '', $callBack = null, $formatDateOnly = false)
 	{
 		// For now we do not treat strings although section 4 of a format code affects strings
 		if (!is_numeric($value)) return $value;
@@ -582,6 +582,7 @@ class PHPExcel_Style_NumberFormat implements PHPExcel_IComparable
 		// Strip color information
 		$color_regex = '/^\\[[a-zA-Z]+\\]/';
 		$format = preg_replace($color_regex, '', $format);
+		$dateFormatted = false;
 
 		// Let's begin inspecting the format and converting the value to a formatted string
 		if (preg_match('/^(\[\$[A-Z]*-[0-9A-F]*\])*[hmsdy]/i', $format)) { // datetime format
@@ -596,6 +597,7 @@ class PHPExcel_Style_NumberFormat implements PHPExcel_IComparable
 			$format = strtolower($format);
 
 			$format = strtr($format,self::$_dateFormatReplacements);
+			$format = preg_replace('/\-/', '/', $format);
 			if (!strpos($format,'A')) {	// 24-hour time format
 				$format = strtr($format,self::$_dateFormatReplacements24);
 			} else {					// 12-hour time format
@@ -604,8 +606,14 @@ class PHPExcel_Style_NumberFormat implements PHPExcel_IComparable
 
 			$dateObj = PHPExcel_Shared_Date::ExcelToPHPObject($value);
 			$value = $dateObj->format($format);
+			$dateFormatted = true;
+		} 
+		
+		if($formatDateOnly) {
+			return $value;
+		}
 
-		} else if (preg_match('/%$/', $format)) { // % number format
+		if (!$dateFormatted && preg_match('/%$/', $format)) { // % number format
 			if ($format === self::FORMAT_PERCENTAGE) {
 				$value = round( (100 * $value), 0) . '%';
 			} else {
@@ -621,7 +629,7 @@ class PHPExcel_Style_NumberFormat implements PHPExcel_IComparable
 				$value = sprintf($format, 100 * $value);
 			}
 
-		} else {
+		} else if (!$dateFormatted) {
 			if ($format === self::FORMAT_CURRENCY_EUR_SIMPLE) {
 				$value = 'EUR ' . sprintf('%1.2f', $value);
 

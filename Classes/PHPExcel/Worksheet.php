@@ -2381,7 +2381,7 @@ class PHPExcel_Worksheet implements PHPExcel_IComparable
 	 *											True - Return rows and columns indexed by their actual row and column IDs
 	 * @return array
 	 */
-	public function rangeToArray($pRange = 'A1', $nullValue = null, $calculateFormulas = true, $formatData = true, $returnCellRef = false) {
+	public function rangeToArray($pRange = 'A1', $nullValue = null, $calculateFormulas = true, $formatData = true, $returnCellRef = false, $formatDateOnly = false) {
 		// Returnvalue
 		$returnValue = array();
 
@@ -2418,9 +2418,9 @@ class PHPExcel_Worksheet implements PHPExcel_IComparable
 							}
 						}
 
-						if ($formatData) {
+						if ($formatData || $formatDateOnly) {
 							$style = $this->_parent->getCellXfByIndex($cell->getXfIndex());
-							$returnValue[$rRef][$cRef] = PHPExcel_Style_NumberFormat::toFormattedString($returnValue[$rRef][$cRef], $style->getNumberFormat()->getFormatCode());
+							$returnValue[$rRef][$cRef] = PHPExcel_Style_NumberFormat::toFormattedString($returnValue[$rRef][$cRef], $style->getNumberFormat()->getFormatCode(), null, $formatDateOnly);
 						}
 					} else {
 						// Cell holds a NULL
