@@ -1,6 +1,11 @@
 {
   "name": "phpoffice/phpexcel",
   "homepage": "https://github.com/ADstruc/PHPExcel",
-  "type": "library"
+  "type": "library",
+  "autoload": {
+      "psr-0": {
+          "PHPExcel": "Classes/"
+      }
+  }
 }
 
