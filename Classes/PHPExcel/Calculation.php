@@ -2673,7 +2673,7 @@ class PHPExcel_Calculation {
 		//	Loop through the formula extracting each operator and operand in turn
 		while(true) {
 //			echo 'Assessing Expression <b>'.substr($formula, $index).'</b><br />';
-			$opCharacter = $formula{$index};	//	Get the first character of the value at the current index position
+			$opCharacter = $formula[$index];	//	Get the first character of the value at the current index position
 //			echo 'Initial character of expression block is '.$opCharacter.'<br />';
 			if ((isset($comparisonOperators[$opCharacter])) && (strlen($formula) > $index) && (isset($comparisonOperators[$formula{$index+1}]))) {
 				$opCharacter .= $formula{++$index};
@@ -2951,11 +2951,11 @@ class PHPExcel_Calculation {
 				}
 			}
 			//	Ignore white space
-			while (($formula{$index} == "\n") || ($formula{$index} == "\r")) {
+			while (($formula[$index] == "\n") || ($formula[$index] == "\r")) {
 				++$index;
 			}
-			if ($formula{$index} == ' ') {
-				while ($formula{$index} == ' ') {
+			if ($formula[$index] == ' ') {
+				while ($formula[$index] == ' ') {
 					++$index;
 				}
 				//	If we're expecting an operator, but only have a space between the previous and next operands (and both are
