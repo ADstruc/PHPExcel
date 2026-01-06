@@ -732,7 +732,7 @@ class PHPExcel_Worksheet_AutoFilter
 									--$period;
 									$periodEnd = (1+$period)*3;
 									$periodStart = 1+$period*3;
-									$ruleValues = range($periodStart,periodEnd);
+									$ruleValues = range($periodStart,$periodEnd);
 								}
 								$columnFilterTests[$columnID] = array(
 									'method' => '_filterTestInPeriodDateSet',
