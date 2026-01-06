@@ -2701,7 +2701,7 @@ class PHPExcel_Reader_Excel5 implements PHPExcel_Reader_IReader
 			$pos += 2;
 
 			// option flags
-			$optionFlags = ord($recordData{$pos});
+			$optionFlags = ord($recordData[$pos]);
 			++$pos;
 
 			// bit: 0; mask: 0x01; 0 = compressed; 1 = uncompressed
@@ -2770,7 +2770,7 @@ class PHPExcel_Reader_Excel5 implements PHPExcel_Reader_IReader
 
 					// repeated option flags
 					// OpenOffice.org documentation 5.21
-					$option = ord($recordData{$pos});
+					$option = ord($recordData[$pos]);
 					++$pos;
 
 					if ($isCompressed && ($option == 0)) {
@@ -2794,7 +2794,7 @@ class PHPExcel_Reader_Excel5 implements PHPExcel_Reader_IReader
 						// this fragment compressed
 						$len = min($charsLeft, $limitpos - $pos);
 						for ($j = 0; $j < $len; ++$j) {
-							$retstr .= $recordData{$pos + $j} . chr(0);
+							$retstr .= $recordData[$pos + $j] . chr(0);
 						}
 						$charsLeft -= $len;
 						$isCompressed = false;
@@ -4349,9 +4349,9 @@ class PHPExcel_Reader_Excel5 implements PHPExcel_Reader_IReader
 				$hyperlinkType = 'UNC';
 			} else if (!$isFileLinkOrUrl) {
 				$hyperlinkType = 'workbook';
-			} else if (ord($recordData{$offset}) == 0x03) {
+			} else if (ord($recordData[$offset]) == 0x03) {
 				$hyperlinkType = 'local';
-			} else if (ord($recordData{$offset}) == 0xE0) {
+			} else if (ord($recordData[$offset]) == 0xE0) {
 				$hyperlinkType = 'URL';
 			}
 

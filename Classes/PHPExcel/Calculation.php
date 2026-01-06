@@ -2675,8 +2675,8 @@ class PHPExcel_Calculation {
 //			echo 'Assessing Expression <b>'.substr($formula, $index).'</b><br />';
 			$opCharacter = $formula[$index];	//	Get the first character of the value at the current index position
 //			echo 'Initial character of expression block is '.$opCharacter.'<br />';
-			if ((isset($comparisonOperators[$opCharacter])) && (strlen($formula) > $index) && (isset($comparisonOperators[$formula{$index+1}]))) {
-				$opCharacter .= $formula{++$index};
+			if ((isset($comparisonOperators[$opCharacter])) && (strlen($formula) > $index) && (isset($comparisonOperators[$formula[$index+1]]))) {
+				$opCharacter .= $formula[++$index];
 //				echo 'Initial character of expression block is comparison operator '.$opCharacter.'<br />';
 			}
 
