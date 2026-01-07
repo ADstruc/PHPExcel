@@ -1798,7 +1798,7 @@ class PHPExcel_Reader_Excel5 implements PHPExcel_Reader_IReader
 			}
 
 			// offset: 10; size: 1; underline type
-			$underlineType = ord($recordData{10});
+			$underlineType = ord($recordData[10]);
 			switch ($underlineType) {
 				case 0x00:
 					break; // no underline
@@ -3718,8 +3718,8 @@ class PHPExcel_Reader_Excel5 implements PHPExcel_Reader_IReader
 
 			// offset: 6; size: 8; result of the formula
 			if ( (ord($recordData[6]) == 0)
-				&& (ord($recordData{12}) == 255)
-				&& (ord($recordData{13}) == 255) ) {
+				&& (ord($recordData[12]) == 255)
+				&& (ord($recordData[13]) == 255) ) {
 
 				// String formula. Result follows in appended STRING record
 				$dataType = PHPExcel_Cell_DataType::TYPE_STRING;
@@ -3734,24 +3734,23 @@ class PHPExcel_Reader_Excel5 implements PHPExcel_Reader_IReader
 				$value = $this->_readString();
 
 			} elseif ((ord($recordData[6]) == 1)
-				&& (ord($recordData{12}) == 255)
-				&& (ord($recordData{13}) == 255)) {
+				&& (ord($recordData[12]) == 255)
+				&& (ord($recordData[13]) == 255)) {
 
 				// Boolean formula. Result is in +2; 0=false, 1=true
 				$dataType = PHPExcel_Cell_DataType::TYPE_BOOL;
 				$value = (bool) ord($recordData[8]);
 
 			} elseif ((ord($recordData[6]) == 2)
-				&& (ord($recordData{12}) == 255)
-				&& (ord($recordData{13}) == 255)) {
-
+				&& (ord($recordData[12]) == 255)
+				&& (ord($recordData[13]) == 255)) {
 				// Error formula. Error code is in +2
 				$dataType = PHPExcel_Cell_DataType::TYPE_ERROR;
 				$value = self::_mapErrorCode(ord($recordData[8]));
 
 			} elseif ((ord($recordData[6]) == 3)
-				&& (ord($recordData{12}) == 255)
-				&& (ord($recordData{13}) == 255)) {
+				&& (ord($recordData[12]) == 255)
+				&& (ord($recordData[13]) == 255)) {
 
 				// Formula result is a null string
 				$dataType = PHPExcel_Cell_DataType::TYPE_NULL;
