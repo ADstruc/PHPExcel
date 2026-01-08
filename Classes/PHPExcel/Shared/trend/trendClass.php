@@ -26,11 +26,11 @@
  */
 
 
-require_once PHPEXCEL_ROOT . 'PHPExcel/Shared/trend/linearBestFitClass.php';
-require_once PHPEXCEL_ROOT . 'PHPExcel/Shared/trend/logarithmicBestFitClass.php';
-require_once PHPEXCEL_ROOT . 'PHPExcel/Shared/trend/exponentialBestFitClass.php';
-require_once PHPEXCEL_ROOT . 'PHPExcel/Shared/trend/powerBestFitClass.php';
-require_once PHPEXCEL_ROOT . 'PHPExcel/Shared/trend/polynomialBestFitClass.php';
+require_once PHPEXCEL_ROOT . 'PHPExcel/Shared/trend/LinearBestFit.php';
+require_once PHPEXCEL_ROOT . 'PHPExcel/Shared/trend/LogarithmicBestFit.php';
+require_once PHPEXCEL_ROOT . 'PHPExcel/Shared/trend/ExponentialBestFit.php';
+require_once PHPEXCEL_ROOT . 'PHPExcel/Shared/trend/PowerBestFit.php';
+require_once PHPEXCEL_ROOT . 'PHPExcel/Shared/trend/PolynomialBestFit.php';
 
 
 /**
@@ -79,7 +79,7 @@ class trendClass
 	/**
 	 * Cached results for each method when trying to identify which provides the best fit
 	 *
-	 * @var PHPExcel_Best_Fit[]
+	* @var PHPExcel_Shared_Trend_BestFit[]
 	 **/
 	private static $_trendCache = array();
 
@@ -93,57 +93,73 @@ class trendClass
 		if ($nX == 0) {
 			$xValues = range(1,$nY);
 			$nX = $nY;
-		} elseif ($nY != $nX) {
-			//	Ensure both arrays of points are the same size
-			trigger_error("trend(): Number of elements in coordinate arrays do not match.", E_USER_ERROR);
-		}
-
-		$key = md5($trendType.$const.serialize($yValues).serialize($xValues));
-		//	Determine which trend method has been requested
-		switch ($trendType) {
-			//	Instantiate and return the class for the requested trend method
-			case self::TREND_LINEAR :
-			case self::TREND_LOGARITHMIC :
-			case self::TREND_EXPONENTIAL :
-			case self::TREND_POWER :
-				if (!isset(self::$_trendCache[$key])) {
-					$className = 'PHPExcel_'.$trendType.'_Best_Fit';
-					self::$_trendCache[$key] = new $className($yValues,$xValues,$const);
-				}
-				return self::$_trendCache[$key];
-				break;
-			case self::TREND_POLYNOMIAL_2	:
-			case self::TREND_POLYNOMIAL_3	:
-			case self::TREND_POLYNOMIAL_4	:
-			case self::TREND_POLYNOMIAL_5	:
-			case self::TREND_POLYNOMIAL_6	:
-				if (!isset(self::$_trendCache[$key])) {
-					$order = substr($trendType,-1);
-					self::$_trendCache[$key] = new PHPExcel_Polynomial_Best_Fit($order,$yValues,$xValues,$const);
-				}
-				return self::$_trendCache[$key];
-				break;
-			case self::TREND_BEST_FIT			:
-			case self::TREND_BEST_FIT_NO_POLY	:
-				//	If the request is to determine the best fit regression, then we test each trend line in turn
-				//	Start by generating an instance of each available trend method
-				foreach(self::$_trendTypes as $trendMethod) {
-					$className = 'PHPExcel_'.$trendMethod.'BestFit';
-					$bestFit[$trendMethod] = new $className($yValues,$xValues,$const);
-					$bestFitValue[$trendMethod] = $bestFit[$trendMethod]->getGoodnessOfFit();
-				}
-				if ($trendType != self::TREND_BEST_FIT_NO_POLY) {
-					foreach(self::$_trendTypePolyOrders as $trendMethod) {
-						$order = substr($trendMethod,-1);
-						$bestFit[$trendMethod] = new PHPExcel_Polynomial_Best_Fit($order,$yValues,$xValues,$const);
-						if ($bestFit[$trendMethod]->getError()) {
-							unset($bestFit[$trendMethod]);
-						} else {
-							$bestFitValue[$trendMethod] = $bestFit[$trendMethod]->getGoodnessOfFit();
-						}
-					}
-				}
-				//	Determine which of our trend lines is the best fit, and then we return the instance of that trend class
+		       switch ($trendType) {
+			       case self::TREND_LINEAR :
+				       if (!isset(self::$_trendCache[$key])) {
+					       self::$_trendCache[$key] = new PHPExcel_Shared_Trend_LinearBestFit($yValues,$xValues,$const);
+				       }
+				       return self::$_trendCache[$key];
+			       case self::TREND_LOGARITHMIC :
+				       if (!isset(self::$_trendCache[$key])) {
+					       self::$_trendCache[$key] = new PHPExcel_Shared_Trend_LogarithmicBestFit($yValues,$xValues,$const);
+				       }
+				       return self::$_trendCache[$key];
+			       case self::TREND_EXPONENTIAL :
+				       if (!isset(self::$_trendCache[$key])) {
+					       self::$_trendCache[$key] = new PHPExcel_Shared_Trend_ExponentialBestFit($yValues,$xValues,$const);
+				       }
+				       return self::$_trendCache[$key];
+			       case self::TREND_POWER :
+				       if (!isset(self::$_trendCache[$key])) {
+					       self::$_trendCache[$key] = new PHPExcel_Shared_Trend_PowerBestFit($yValues,$xValues,$const);
+				       }
+				       return self::$_trendCache[$key];
+			       case self::TREND_POLYNOMIAL_2 :
+			       case self::TREND_POLYNOMIAL_3 :
+			       case self::TREND_POLYNOMIAL_4 :
+			       case self::TREND_POLYNOMIAL_5 :
+			       case self::TREND_POLYNOMIAL_6 :
+				       if (!isset(self::$_trendCache[$key])) {
+					       $order = substr($trendType,-1);
+					       self::$_trendCache[$key] = new PHPExcel_Shared_Trend_PolynomialBestFit($order,$yValues,$xValues,$const);
+				       }
+				       return self::$_trendCache[$key];
+			       case self::TREND_BEST_FIT :
+			       case self::TREND_BEST_FIT_NO_POLY :
+				       foreach(self::$_trendTypes as $trendMethod) {
+					       switch ($trendMethod) {
+						       case self::TREND_LINEAR:
+							       $bestFit[$trendMethod] = new PHPExcel_Shared_Trend_LinearBestFit($yValues,$xValues,$const);
+							       break;
+						       case self::TREND_LOGARITHMIC:
+							       $bestFit[$trendMethod] = new PHPExcel_Shared_Trend_LogarithmicBestFit($yValues,$xValues,$const);
+							       break;
+						       case self::TREND_EXPONENTIAL:
+							       $bestFit[$trendMethod] = new PHPExcel_Shared_Trend_ExponentialBestFit($yValues,$xValues,$const);
+							       break;
+						       case self::TREND_POWER:
+							       $bestFit[$trendMethod] = new PHPExcel_Shared_Trend_PowerBestFit($yValues,$xValues,$const);
+							       break;
+					       }
+					       $bestFitValue[$trendMethod] = $bestFit[$trendMethod]->getGoodnessOfFit();
+				       }
+				       if ($trendType != self::TREND_BEST_FIT_NO_POLY) {
+					       foreach(self::$_trendTypePolyOrders as $trendMethod) {
+						       $order = substr($trendMethod,-1);
+						       $bestFit[$trendMethod] = new PHPExcel_Shared_Trend_PolynomialBestFit($order,$yValues,$xValues,$const);
+						       if ($bestFit[$trendMethod]->getError()) {
+							       unset($bestFit[$trendMethod]);
+						       } else {
+							       $bestFitValue[$trendMethod] = $bestFit[$trendMethod]->getGoodnessOfFit();
+						       }
+					       }
+				       }
+				       arsort($bestFitValue);
+				       $bestFitType = key($bestFitValue);
+				       return $bestFit[$bestFitType];
+			       default :
+				       return false;
+		       }
 				arsort($bestFitValue);
 				$bestFitType = key($bestFitValue);
 				return $bestFit[$bestFitType];
